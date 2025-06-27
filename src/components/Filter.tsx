@@ -1,33 +1,22 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setFilter, filterSelector } from "src/store/taskSlice";
-
-export type FilterType = "all" | "completed" | "active";
+import { toggleFilter, hideCompletedSelector } from "src/store/taskSlice";
 
 export const Filter = () => {
-  const currentFilter = useSelector(filterSelector);
+  const hideCompleted = useSelector(hideCompletedSelector);
   const dispatch = useDispatch();
 
-  const handleFilterChange = (filter: FilterType) => {
-    dispatch(setFilter(filter));
+  const handleToggleFilter = () => {
+    dispatch(toggleFilter());
   };
-
-  const filterOptions = [
-    { value: "all" as const, label: "Все задачи" },
-    { value: "completed" as const, label: "Выполненные" },
-    { value: "active" as const, label: "Невыполненные" },
-  ];
 
   return (
     <div className="filter">
-      {filterOptions.map(({ value, label }) => (
-        <button
-          key={value}
-          className={`filter-btn ${currentFilter === value ? "active" : ""}`}
-          onClick={() => handleFilterChange(value)}
-        >
-          {label}
-        </button>
-      ))}
+      <button
+        className={`filter-btn ${hideCompleted ? "active" : ""}`}
+        onClick={handleToggleFilter}
+      >
+        {hideCompleted ? "Показать все задачи" : "Скрыть выполненные"}
+      </button>
     </div>
   );
 };

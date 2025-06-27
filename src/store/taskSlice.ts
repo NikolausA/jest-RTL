@@ -2,17 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "./configureStore";
 
-export type FilterType = "all" | "completed" | "active";
-
 export interface taskListState {
   list: Task[];
-  filter: FilterType;
+  hideCompleted: boolean;
   notification: string;
 }
 
 const initialState: taskListState = {
   list: [],
-  filter: "all",
+  hideCompleted: false,
   notification: "",
 };
 
@@ -21,6 +19,13 @@ export const taskListSlice = createSlice({
   initialState,
   reducers: {
     addTask: (state, action: PayloadAction<Task["header"]>) => {
+      const uncompleted = state.list.filter((t) => !t.done);
+
+      if (uncompleted.length >= 10) {
+        state.notification = "Нельзя добавить больше 10 невыполненных задач";
+        return;
+      }
+
       state.list.push({
         id: crypto.randomUUID(),
         header: action.payload,
@@ -48,8 +53,8 @@ export const taskListSlice = createSlice({
     deleteTask: (state, action: PayloadAction<Task["id"]>) => {
       state.list = state.list.filter((x) => x.id !== action.payload);
     },
-    setFilter: (state, action: PayloadAction<FilterType>) => {
-      state.filter = action.payload;
+    toggleFilter: (state, action: PayloadAction) => {
+      state.hideCompleted = !state.hideCompleted;
     },
     setNotification: (state, action: PayloadAction<Task["header"]>) => {
       state.notification = `Задача "${action.payload}" завершена`;
@@ -65,27 +70,24 @@ export const {
   completeTask,
   deleteTask,
   toggleTask,
-  setFilter,
+  toggleFilter,
   clearNotification,
 } = taskListSlice.actions;
 
 export default taskListSlice.reducer;
 
 export const tasksSelector = (state: RootState) => {
-  const { list, filter } = state.taskList;
+  const { list, hideCompleted } = state.taskList;
 
-  switch (filter) {
-    case "completed":
-      return list.filter((task) => task.done === true);
-    case "active":
-      return list.filter((task) => task.done === false);
-    case "all":
-    default:
-      return list;
+  if (hideCompleted) {
+    return list.filter((item) => item.done === false);
   }
+
+  return list;
 };
 
-export const filterSelector = (state: RootState) => state.taskList.filter;
+export const hideCompletedSelector = (state: RootState) =>
+  state.taskList.hideCompleted;
 
 export const fullCount = (state: RootState) => state.taskList.list.length;
 
