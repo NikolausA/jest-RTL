@@ -129,10 +129,23 @@
   gap: 8px;
 }
 
-.item-wrapper label {
+/* .item-wrapper label {
   font-size: 12px;
   user-select: none;
   width: 100%;
+
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
+} */
+
+.task-label {
+  font-size: 12px;
+  user-select: none;
+  width: 100%;
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: inline-block;
 
   border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
 }
@@ -144,10 +157,9 @@
 }
 
 .filter-btn {
-  padding: 5px 8px;
+  padding: 8px 16px;
   border: 1px solid #ccc;
   background: white;
-  font-size: 0.7em;
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.2s;

@@ -5,22 +5,27 @@ type Props = Task & {
   onToggle: (id: Task["id"]) => void;
 };
 
-export const Item = (props: Props) => {
+export const Item = ({ id, header, done, onDelete, onToggle }: Props) => {
+  const isLong = header.length > 32;
+  const displayedHeader = header.trim() === "" ? "Без названия" : header;
+
   return (
     <li className="item-wrapper">
       <input
         type="checkbox"
-        id={props.id}
-        defaultChecked={props.done}
-        onChange={() => props.onToggle(props.id)}
+        id={id}
+        defaultChecked={done}
+        onChange={() => onToggle(id)}
       />
-      <label htmlFor={props.id} onClick={() => props.onToggle(props.id)}>
-        {props.done ? <s>{props.header}</s> : props.header}
+      <label
+        htmlFor={id}
+        className={isLong ? "task-label truncated" : "task-label"}
+        title={isLong ? displayedHeader : undefined}
+        onClick={() => onToggle(id)}
+      >
+        {done ? <s>{displayedHeader}</s> : displayedHeader}
       </label>
-      <DeleteButton
-        disabled={!props.done}
-        onClick={() => props.onDelete(props.id)}
-      />
+      <DeleteButton disabled={!done} onClick={() => onDelete(id)} />
     </li>
   );
 };
